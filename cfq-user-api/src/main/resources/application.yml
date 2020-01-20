@@ -1,0 +1,15 @@
+server:
+  port: 9090
+
+spring:
+  application:
+    name: user-api
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/study-security?characterEncoding=UTF-8&useSSL=false
+    username: root
+    password: root
+  jpa:
+    generate-ddl: true
+    show-sql: true
+
