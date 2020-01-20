@@ -1,9 +1,17 @@
 package cn.caofanqi.security.service;
+
+import cn.caofanqi.security.pojo.dto.UserDTO;
+
+import java.util.List;
+
 /**
- * 描述一下
+ * 用户业务层接口
  * @author caofanqi
  * @date 2020/1/20 13:51
- * @version 1.0.0
  */
 public interface UserService {
+
+
+    List<UserDTO> query(String name);
+
 }

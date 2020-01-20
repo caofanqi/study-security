@@ -1,9 +1,18 @@
 package cn.caofanqi.security.repository;
+
+import cn.caofanqi.security.pojo.doo.UserDO;
+import org.springframework.data.jpa.repository.support.JpaRepositoryImplementation;
+
+import java.util.List;
+
 /**
- * 描述一下
+ * 用户持久层接口
  * @author caofanqi
  * @date 2020/1/20 14:58
- * @version 1.0.0
  */
-public interface UserRepository {
+public interface UserRepository extends JpaRepositoryImplementation<UserDO,Long> {
+
+
+    List<UserDO> findByName(String name);
+
 }
