@@ -9,6 +9,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,24 +28,46 @@ public class UserServiceImpl implements UserService {
     @Resource
     private JdbcTemplate jdbcTemplate;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Resource
     private UserRepository userRepository;
 
+
+    /*
+     * SQL拼接时，不要将参数一并拼接，要使用占位符替代，防止SQL注入。
+     */
     @Override
     public List<UserDTO> query(String name) {
 
-//
+        // 1、
 //        String sql = "SELECT * FROM user WHERE name = '" + name + "'";
+//        log.info("执行的SQL为:{}",sql);
 //        List<UserDO> queryResult = jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(UserDO.class));
 
+        // 2、
 //        String sql = "SELECT * FROM user WHERE name = ? ";
 //        List<UserDO> queryResult = jdbcTemplate.query(sql, new Object[]{name}, BeanPropertyRowMapper.newInstance(UserDO.class));
-//        log.info("执行的sql: [{}]", sql);
 
+        // 3、
+//        String sql = "SELECT * FROM user WHERE name = '" + name + "'";
+//        Query nativeQuery = entityManager.createNativeQuery(sql, UserDO.class);
+//        List<UserDO> queryResult = nativeQuery.getResultList();
+
+        // 4、
+//        String sql = "SELECT * FROM user WHERE name = ? ";
+//        Query nativeQuery = entityManager.createNativeQuery(sql, UserDO.class);
+//        nativeQuery.setParameter(1, name);
+//        List<UserDO> queryResult = nativeQuery.getResultList();
+
+        // 5、
         List<UserDO> queryResult = userRepository.findByName(name);
 
         List<UserDTO> result = queryResult.stream().map(UserDO::buildUserDTO).collect(Collectors.toList());
 
         return result;
     }
+
+
 }
