@@ -36,7 +36,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public UserDTO get(@PathVariable Long id) {
-        return null;
+        return userService.get(id);
     }
 
     @PostMapping

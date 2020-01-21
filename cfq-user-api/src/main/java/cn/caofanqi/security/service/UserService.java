@@ -14,4 +14,6 @@ public interface UserService {
 
     List<UserDTO> query(String name);
 
+    UserDTO get(Long id);
+
 }

@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -67,6 +68,13 @@ public class UserServiceImpl implements UserService {
         List<UserDTO> result = queryResult.stream().map(UserDO::buildUserDTO).collect(Collectors.toList());
 
         return result;
+    }
+
+    @Override
+    public UserDTO get(Long id) {
+        Optional<UserDO> userOp = userRepository.findById(id);
+        UserDO userDO = userOp.orElse(new UserDO());
+        return userDO.buildUserDTO();
     }
 
 
