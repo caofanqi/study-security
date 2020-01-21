@@ -5,6 +5,7 @@ import cn.caofanqi.security.pojo.dto.UserDTO;
 import cn.caofanqi.security.repository.UserRepository;
 import cn.caofanqi.security.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -75,6 +76,15 @@ public class UserServiceImpl implements UserService {
         Optional<UserDO> userOp = userRepository.findById(id);
         UserDO userDO = userOp.orElse(new UserDO());
         return userDO.buildUserDTO();
+    }
+
+    @Override
+    public UserDTO create(UserDTO userDTO) {
+        UserDO userDO = new UserDO();
+        BeanUtils.copyProperties(userDTO,userDO);
+        userRepository.save(userDO);
+        userDTO.setId(userDO.getId());
+        return userDTO;
     }
 
 

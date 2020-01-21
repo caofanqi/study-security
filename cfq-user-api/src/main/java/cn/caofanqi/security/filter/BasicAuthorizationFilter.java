@@ -1,0 +1,68 @@
+package cn.caofanqi.security.filter;
+
+import cn.caofanqi.security.pojo.doo.UserDO;
+import cn.caofanqi.security.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
+import org.springframework.util.Base64Utils;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import javax.annotation.Resource;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+/**
+ * HttpBasic 认证
+ *
+ * @author caofanqi
+ * @date 2020/1/21 15:10
+ */
+@Slf4j
+@Component
+@SuppressWarnings("ALL")
+public class BasicAuthorizationFilter extends OncePerRequestFilter {
+
+    @Resource
+    private UserRepository userRepository;
+
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        String authorizationHeader = request.getHeader("Authorization");
+
+        if (StringUtils.isNotBlank(authorizationHeader)) {
+
+            String token64 = StringUtils.substringAfter(authorizationHeader, "Basic ");
+
+            if (StringUtils.isNotBlank(token64)) {
+                try {
+                    String token = new String(Base64Utils.decodeFromString(token64));
+                    String[] items = StringUtils.splitByWholeSeparatorPreserveAllTokens(token, ":");
+                    String username = items[0];
+                    String password = items[1];
+
+                    UserDO user = userRepository.findByUsername(username);
+
+                    if (user != null && StringUtils.equals(user.getPassword(), password)) {
+                        //认证通过,存放用户信息
+                        request.setAttribute("user", user);
+                    }
+
+                } catch (Exception e) {
+                    log.info("Basic Authorization Fail!");
+                }
+            }
+
+        }
+
+        //不管认证是否正确，继续往下走，是否可以访问，交给授权处理
+        filterChain.doFilter(request, response);
+
+    }
+
+}

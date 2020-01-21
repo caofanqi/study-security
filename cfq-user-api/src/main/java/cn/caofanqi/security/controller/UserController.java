@@ -1,7 +1,9 @@
 package cn.caofanqi.security.controller;
 
+import cn.caofanqi.security.pojo.doo.UserDO;
 import cn.caofanqi.security.pojo.dto.UserDTO;
 import cn.caofanqi.security.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -35,13 +40,34 @@ public class UserController {
 
 
     @GetMapping("/{id}")
-    public UserDTO get(@PathVariable Long id) {
+    public UserDTO get(@PathVariable Long id, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        /*
+         * 因为还没有学习授权机制，这里写代码进行控制
+         */
+        UserDO user = (UserDO) request.getAttribute("user");
+
+        if (user == null){
+            //说明没有进行认证，返回401和WWW-Authenticate
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setHeader("WWW-Authenticate","Basic realm=<authentication required>");
+            return null;
+        }
+
+        if (!user.getId().equals(id)){
+            //只能查看自己的用户信息，不是本人，返回403
+            response.setStatus(HttpStatus.FORBIDDEN.value());
+            response.getWriter().write("permission denied");
+            response.getWriter().flush();
+            return null;
+        }
+
         return userService.get(id);
     }
 
     @PostMapping
-    public UserDTO create(@RequestBody UserDTO user){
-        return null;
+    public UserDTO create(@RequestBody UserDTO userDTO){
+        return userService.create(userDTO);
     }
 
 

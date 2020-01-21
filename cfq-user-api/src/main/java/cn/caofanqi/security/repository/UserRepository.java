@@ -15,4 +15,5 @@ public interface UserRepository extends JpaRepositoryImplementation<UserDO,Long>
 
     List<UserDO> findByName(String name);
 
+    UserDO findByUsername(String username);
 }
