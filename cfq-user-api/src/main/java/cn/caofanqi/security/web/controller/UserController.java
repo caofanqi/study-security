@@ -1,9 +1,12 @@
-package cn.caofanqi.security.controller;
+package cn.caofanqi.security.web.controller;
 
 import cn.caofanqi.security.pojo.doo.UserDO;
 import cn.caofanqi.security.pojo.dto.UserDTO;
 import cn.caofanqi.security.service.UserService;
+import cn.caofanqi.security.validation.groups.Create;
+import cn.caofanqi.security.validation.groups.Update;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
@@ -25,6 +29,7 @@ import java.util.List;
  * @author caofanqi
  * @date 2020/1/20 13:05
  */
+@Validated
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -66,10 +71,21 @@ public class UserController {
     }
 
     @PostMapping
-    public UserDTO create(@RequestBody UserDTO userDTO){
+    public UserDTO create(@RequestBody @Validated(Create.class) UserDTO userDTO){
         return userService.create(userDTO);
     }
 
+    @PutMapping
+    public UserDTO update(@RequestBody @Validated(Update.class) UserDTO userDTO) {
+        return userService.update(userDTO);
+    }
+
+
+    @PostMapping("/batch")
+    @Validated(Create.class)
+    public void batchCreate(@RequestBody  List<@Valid UserDTO> userDTOS){
+        userService.batchCreate(userDTOS);
+    }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id){
@@ -77,10 +93,7 @@ public class UserController {
     }
 
 
-    @PutMapping
-    public UserDTO update(@RequestBody UserDTO user) {
-        return null;
-    }
+
 
 
 }

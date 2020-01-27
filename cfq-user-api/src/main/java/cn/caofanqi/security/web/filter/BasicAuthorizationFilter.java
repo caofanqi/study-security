@@ -1,4 +1,4 @@
-package cn.caofanqi.security.filter;
+package cn.caofanqi.security.web.filter;
 
 import cn.caofanqi.security.pojo.doo.UserDO;
 import cn.caofanqi.security.repository.UserRepository;

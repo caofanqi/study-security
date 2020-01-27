@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
@@ -79,12 +80,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public UserDTO create(UserDTO userDTO) {
         UserDO userDO = new UserDO();
-        BeanUtils.copyProperties(userDTO,userDO);
+        BeanUtils.copyProperties(userDTO, userDO);
         userRepository.save(userDO);
         userDTO.setId(userDO.getId());
         return userDTO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public UserDTO update(UserDTO userDTO) {
+        Optional<UserDO> userOp = userRepository.findById(userDTO.getId());
+        UserDO userDO = userOp.orElseThrow(() -> new RuntimeException("该用户不存在"));
+        BeanUtils.copyProperties(userDTO, userDO);
+        return userDTO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void batchCreate(List<UserDTO> userDTOS) {
+        List<UserDO> userList = userDTOS.stream().map(userDTO -> {
+            UserDO userDO = new UserDO();
+            BeanUtils.copyProperties(userDTO, userDO);
+            return userDO;
+        }).collect(Collectors.toList());
+        userRepository.saveAll(userList);
     }
 
 

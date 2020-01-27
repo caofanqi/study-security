@@ -1,4 +1,4 @@
-package cn.caofanqi.security.filter;
+package cn.caofanqi.security.web.filter;
 
 import com.google.common.util.concurrent.RateLimiter;
 import org.springframework.http.HttpStatus;
