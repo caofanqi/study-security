@@ -2,8 +2,10 @@ package cn.caofanqi.security.web.filter;
 
 import cn.caofanqi.security.pojo.doo.UserDO;
 import cn.caofanqi.security.repository.UserRepository;
+import com.lambdaworks.crypto.SCryptUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -48,7 +50,8 @@ public class BasicAuthorizationFilter extends OncePerRequestFilter {
 
                     UserDO user = userRepository.findByUsername(username);
 
-                    if (user != null && StringUtils.equals(user.getPassword(), password)) {
+                    if (user != null && BCrypt.checkpw(password,user.getPassword())) {
+//                    if (user != null && SCryptUtil.check(password,user.getPassword())) {
                         //认证通过,存放用户信息
                         request.setAttribute("user", user);
                     }

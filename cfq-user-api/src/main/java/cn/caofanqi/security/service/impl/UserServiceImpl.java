@@ -4,7 +4,9 @@ import cn.caofanqi.security.pojo.doo.UserDO;
 import cn.caofanqi.security.pojo.dto.UserDTO;
 import cn.caofanqi.security.repository.UserRepository;
 import cn.caofanqi.security.service.UserService;
+import com.lambdaworks.crypto.SCryptUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.BeanUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -82,6 +84,11 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UserDTO create(UserDTO userDTO) {
+        /*
+         * 将密码加密成密文
+         */
+        userDTO.setPassword(BCrypt.hashpw(userDTO.getPassword(),BCrypt.gensalt()));
+//        userDTO.setPassword(SCryptUtil.scrypt(userDTO.getPassword(),2 << 14,8,1));
         UserDO userDO = new UserDO();
         BeanUtils.copyProperties(userDTO, userDO);
         userRepository.save(userDO);
@@ -102,6 +109,8 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = Exception.class)
     public void batchCreate(List<UserDTO> userDTOS) {
         List<UserDO> userList = userDTOS.stream().map(userDTO -> {
+            userDTO.setPassword(BCrypt.hashpw(userDTO.getPassword(),BCrypt.gensalt()));
+//        userDTO.setPassword(SCryptUtil.scrypt(userDTO.getPassword(),2 << 14,8,1));
             UserDO userDO = new UserDO();
             BeanUtils.copyProperties(userDTO, userDO);
             return userDO;

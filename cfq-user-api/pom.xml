@@ -30,6 +30,8 @@
         <!--   覆盖默认的8驱动     -->
         <mysql.version>5.1.41</mysql.version>
         <guava.version>28.0-jre</guava.version>
+        <jbcrypt.version>0.4</jbcrypt.version>
+        <scrypt.versioin>1.4.0</scrypt.versioin>
     </properties>
 
     <dependencies>
@@ -64,6 +66,19 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>${jbcrypt.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.lambdaworks</groupId>
+            <artifactId>scrypt</artifactId>
+            <version>${scrypt.versioin}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
