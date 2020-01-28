@@ -1,4 +1,11 @@
 server:
+  port: 8443
+  ssl:
+    key-store: classpath:cfq.key
+    key-store-password: 123456
+    key-password: 123456
+
+http:
   port: 9090
 
 spring:
@@ -12,4 +19,3 @@ spring:
   jpa:
     generate-ddl: true
     show-sql: true
-
