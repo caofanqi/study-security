@@ -1,6 +1,8 @@
 package cn.caofanqi.security.web.filter;
 
 import com.google.common.util.concurrent.RateLimiter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -19,6 +21,8 @@ import java.io.IOException;
  * @author caofanqi
  * @date 2020/1/20 23:29
  */
+@Slf4j
+@Order(1)
 @Component
 @SuppressWarnings("ALL")
 public class RateLimiterFilter extends OncePerRequestFilter {
@@ -31,6 +35,8 @@ public class RateLimiterFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal( HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        log.info("++++++1、流控++++++");
 
         if(rateLimiter.tryAcquire()) {
             filterChain.doFilter(request, response);

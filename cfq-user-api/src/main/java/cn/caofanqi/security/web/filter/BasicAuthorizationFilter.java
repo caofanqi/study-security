@@ -6,6 +6,7 @@ import com.lambdaworks.crypto.SCryptUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -24,6 +25,7 @@ import java.io.IOException;
  * @date 2020/1/21 15:10
  */
 @Slf4j
+@Order(2)
 @Component
 @SuppressWarnings("ALL")
 public class BasicAuthorizationFilter extends OncePerRequestFilter {
@@ -34,6 +36,8 @@ public class BasicAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        log.info("++++++2、认证++++++");
 
         String authorizationHeader = request.getHeader("Authorization");
 

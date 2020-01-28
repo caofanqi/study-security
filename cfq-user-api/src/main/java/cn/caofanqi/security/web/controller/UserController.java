@@ -89,11 +89,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id){
-
+        int i = 1 / 0 ;
     }
-
-
-
-
 
 }
