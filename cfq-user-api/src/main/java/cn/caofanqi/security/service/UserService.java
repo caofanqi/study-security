@@ -2,7 +2,9 @@ package cn.caofanqi.security.service;
 
 import cn.caofanqi.security.pojo.dto.UserDTO;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户业务层接口
@@ -21,4 +23,6 @@ public interface UserService {
     UserDTO update(UserDTO userDTO);
 
     void batchCreate(List<UserDTO> userDTOS);
+
+    Map<String, String> login(UserDTO userDTO, HttpServletRequest request);
 }

@@ -4,6 +4,7 @@ import cn.caofanqi.security.pojo.doo.UserDO;
 import cn.caofanqi.security.pojo.dto.UserDTO;
 import cn.caofanqi.security.repository.UserRepository;
 import cn.caofanqi.security.service.UserService;
+import com.google.common.collect.Maps;
 import com.lambdaworks.crypto.SCryptUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
@@ -15,7 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -116,6 +121,31 @@ public class UserServiceImpl implements UserService {
             return userDO;
         }).collect(Collectors.toList());
         userRepository.saveAll(userList);
+    }
+
+    @Override
+    public Map<String, String> login(UserDTO userDTO, HttpServletRequest request) {
+
+        Map<String,String> result = Maps.newHashMap();
+
+        UserDO userDO = userRepository.findByUsername(userDTO.getUsername());
+        if (userDO == null){
+            result.put("message","用户名错误");
+        }else if (!BCrypt.checkpw(userDTO.getPassword(),userDO.getPassword())){
+            result.put("message","密码错误");
+        }else {
+            HttpSession session = request.getSession(false);
+            //将之前的session失效掉
+            if (session != null){
+                session.invalidate();
+            }
+            //将用户信息放到新的session中
+            request.getSession(true).setAttribute("user",userDO.buildUserDTO());
+
+            result.put("message","登陆成功");
+        }
+
+        return result;
     }
 
 

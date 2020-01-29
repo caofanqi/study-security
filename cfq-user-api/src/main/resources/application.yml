@@ -8,6 +8,9 @@ server:
 http:
   port: 9090
 
+permit:
+  urls: /users/login
+
 spring:
   application:
     name: user-api

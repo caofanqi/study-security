@@ -4,6 +4,7 @@ package cn.caofanqi.security.pojo.dto;
 import cn.caofanqi.security.validation.constraints.CustomConstraint;
 import cn.caofanqi.security.validation.constraints.UserDTOConstraint;
 import cn.caofanqi.security.validation.groups.Create;
+import cn.caofanqi.security.validation.groups.Login;
 import cn.caofanqi.security.validation.groups.Update;
 import lombok.Data;
 
@@ -11,6 +12,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
+import javax.validation.groups.Default;
 
 
 /**
@@ -29,15 +31,16 @@ public class UserDTO {
     @NotNull(message = "名称不能为空")
     private String name;
 
-    @NotBlank(message = "用户名不能为空")
+    @NotBlank(message = "用户名不能为空",groups = {Login.class, Default.class})
     private String username;
 
-    @NotBlank(message = "密码不能为空")
+    @NotBlank(message = "密码不能为空",groups = {Login.class, Default.class})
     private String password;
 
     @Valid
     @NotNull(message = "用户详情不能为空")
     private UserInfoDTO userInfo;
 
+    private String permissions;
 
 }

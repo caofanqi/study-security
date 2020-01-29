@@ -1,15 +1,21 @@
 package cn.caofanqi.security.web.interceptor;
 
-import cn.caofanqi.security.pojo.doo.UserDO;
+import cn.caofanqi.security.pojo.dto.UserDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * ACL拦截器
@@ -19,7 +25,14 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Slf4j
 //@Component
-public class AclInterceptor extends HandlerInterceptorAdapter {
+public class AclInterceptor extends HandlerInterceptorAdapter  implements InitializingBean {
+
+    @Value("${permit.urls}")
+    private String permitUrls;
+
+    private Set<String> permitUrlSet = new HashSet<>();
+
+    private AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -27,7 +40,11 @@ public class AclInterceptor extends HandlerInterceptorAdapter {
 
         log.info("++++++4、授权++++++");
 
-        UserDO user = (UserDO) request.getAttribute("user");
+        if (isPermitUrl(request)){
+            return true;
+        }
+
+        UserDTO user = (UserDTO) request.getSession().getAttribute("user");
         if (user == null) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setHeader("WWW-Authenticate", "Basic realm=<authentication required>");
@@ -44,6 +61,19 @@ public class AclInterceptor extends HandlerInterceptorAdapter {
         return true;
     }
 
+
+    private boolean isPermitUrl(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        for (String url : permitUrlSet){
+            if (pathMatcher.match(url,uri)){
+                // 不需要认证和权限，直接访问
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private boolean hasPermission(String permissions, String method) {
 
         if (StringUtils.equalsIgnoreCase(method, HttpMethod.GET.name())) {
@@ -51,6 +81,11 @@ public class AclInterceptor extends HandlerInterceptorAdapter {
         } else {
             return StringUtils.containsIgnoreCase(permissions, "write");
         }
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        Collections.addAll(permitUrlSet,StringUtils.splitByWholeSeparatorPreserveAllTokens(permitUrls,","));
     }
 
 }

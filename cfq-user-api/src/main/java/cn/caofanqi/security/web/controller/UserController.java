@@ -1,9 +1,9 @@
 package cn.caofanqi.security.web.controller;
 
-import cn.caofanqi.security.pojo.doo.UserDO;
 import cn.caofanqi.security.pojo.dto.UserDTO;
 import cn.caofanqi.security.service.UserService;
 import cn.caofanqi.security.validation.groups.Create;
+import cn.caofanqi.security.validation.groups.Login;
 import cn.caofanqi.security.validation.groups.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户控制层
@@ -37,6 +38,15 @@ public class UserController {
     @Resource
     private UserService userService;
 
+    @PostMapping("/login")
+    public Map<String, String> login(@RequestBody @Validated(Login.class) UserDTO userDTO,HttpServletRequest request) {
+        return userService.login(userDTO,request);
+    }
+
+    @RequestMapping("/logout")
+    public void logout(HttpServletRequest request){
+        request.getSession().invalidate();
+    }
 
     @GetMapping
     public List<UserDTO> query(String name) {
@@ -48,16 +58,9 @@ public class UserController {
     public UserDTO get(@PathVariable Long id, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         /*
-         * 因为还没有学习授权机制，这里写代码进行控制
+         * 控制只有自己才能查看自己的信息
          */
-        UserDO user = (UserDO) request.getAttribute("user");
-
-        if (user == null){
-            //说明没有进行认证，返回401和WWW-Authenticate
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setHeader("WWW-Authenticate","Basic realm=<authentication required>");
-            return null;
-        }
+        UserDTO user = (UserDTO) request.getSession().getAttribute("user");
 
         if (!user.getId().equals(id)){
             //只能查看自己的用户信息，不是本人，返回403
