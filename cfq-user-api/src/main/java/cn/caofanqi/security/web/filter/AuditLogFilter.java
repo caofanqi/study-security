@@ -23,6 +23,7 @@ import java.io.IOException;
 @Slf4j
 @Order(3)
 @Component
+@SuppressWarnings("ALL")
 public class AuditLogFilter extends OncePerRequestFilter {
 
 

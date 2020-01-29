@@ -34,6 +34,11 @@ public class UserDO {
     @Column(nullable = false)
     private String password;
 
+    /**
+     *  用户具有的权限信息，多个用逗号隔开；read读权限，write写权限
+     */
+    private String permissions;
+
 
     public UserDTO buildUserDTO(){
         UserDTO userDTO = new UserDTO();

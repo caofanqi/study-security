@@ -62,7 +62,7 @@ public class UserController {
         if (!user.getId().equals(id)){
             //只能查看自己的用户信息，不是本人，返回403
             response.setStatus(HttpStatus.FORBIDDEN.value());
-            response.getWriter().write("permission denied");
+            response.getWriter().write("Forbidden");
             response.getWriter().flush();
             return null;
         }
