@@ -1,0 +1,42 @@
+server:
+  port: 9010
+
+spring:
+  application:
+    name: gateway-server
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/study-security?characterEncoding=UTF-8&useSSL=false
+    username: root
+    password: root
+  jpa:
+    generate-ddl: true
+    show-sql: true
+
+#不需要校验的路径配置
+permit:
+  urls : /token/**
+
+zuul:
+  routes:
+    token:
+      url: http://127.0.0.1:9020
+      path: /token/**
+    order:
+      url: http://127.0.0.1:9080
+      path: /order/**
+  #敏感头设置为空，因为默认的包含 Authorization，我们需要通过Authorization传递信息
+  sensitive-headers:
+  #限流相关配置
+  ratelimit:
+    key-prefix: zuul-ratelimit  #key的前缀，默认为应用名
+    enabled: true #是否启用限流
+    repository: REDIS #使用的存储
+    behind-proxy: false #是否是代理之后，默认false
+    default-policy-list: #默认策略列表：可选，针对所有的路由配置的策略，除非有具体的policy，否者使用默认该默认策略
+      - limit: 2 # 可选，每个 refresh-interval 窗口的请求数限制
+        quota: 1 # 可选，每个refresh-interval窗口的请求时间限制（秒）
+        refresh-interval: 10 # 默认值 (秒)
+        type: #可选，限流方式，组合使用
+          - url #根据请求路径
+          - http_method #根据请求方法
