@@ -20,10 +20,10 @@ permit:
 zuul:
   routes:
     token:
-      url: http://127.0.0.1:9020
+      url: http://auth.caofanqi.cn:9020
       path: /token/**
     order:
-      url: http://127.0.0.1:9080
+      url: http://order.caofanqi.cn:9080
       path: /order/**
   #敏感头设置为空，因为默认的包含 Authorization，我们需要通过Authorization传递信息
   sensitive-headers:

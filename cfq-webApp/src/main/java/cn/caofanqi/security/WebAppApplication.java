@@ -15,10 +15,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * 模拟前端服务器
@@ -47,13 +50,28 @@ public class WebAppApplication {
         return (TokenInfoDTO)request.getSession().getAttribute("token");
     }
 
+    /**
+     * 向授权服务器获取授权码
+     */
+    @GetMapping("/oauth/code")
+    public void oauthCode(HttpServletResponse response) throws IOException {
+        String oauthCodeUrl = "http://auth.caofanqi.cn:9020/oauth/authorize?" +
+                "client_id=webApp&" +
+                "redirect_uri=http://web.caofanqi.cn:9000/oauth/callback&" +
+                "response_type=code&" +
+                "state=abc";
+
+        response.sendRedirect(oauthCodeUrl);
+    }
 
     /**
-     * 登陆方法
-     * 向认证服务器获取令牌，将token信息放到session中
+     * 回调方法
+     *  接收认证服务器发来的授权码，并换取令牌
+     * @param code 授权码
+     * @param state 请求授权服务器时发送的state
      */
-    @PostMapping("/login")
-    public void login(@RequestBody UserDTO userDTO, HttpServletRequest request) {
+    @GetMapping("/oauth/callback")
+    public void oauthCallback(@RequestParam String code, String state, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         String oauthTokenUrl = "http://gateway.caofanqi.cn:9010/token/oauth/token";
 
@@ -62,18 +80,20 @@ public class WebAppApplication {
         headers.setBasicAuth("webApp", "123456");
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.set("username", userDTO.getUsername());
-        params.set("password", userDTO.getPassword());
-        params.set("grant_type", "password");
-        params.set("scope", "read write");
+        params.set("code",code);
+        params.set("grant_type", "authorization_code");
+        params.set("redirect_uri", "http://web.caofanqi.cn:9000/oauth/callback");
 
         HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(params, headers);
 
-        ResponseEntity<TokenInfoDTO> response = restTemplate.exchange(oauthTokenUrl, HttpMethod.POST, httpEntity, TokenInfoDTO.class);
+        ResponseEntity<TokenInfoDTO> authResult = restTemplate.exchange(oauthTokenUrl, HttpMethod.POST, httpEntity, TokenInfoDTO.class);
 
-        request.getSession().setAttribute("token", response.getBody());
-        log.info("tokenInfo : {}",response.getBody());
+        request.getSession().setAttribute("token", authResult.getBody());
+        log.info("tokenInfo : {}",authResult.getBody());
 
+        log.info("state :{}",state);
+        //一般会根据state记录需要登陆时的路由
+        response.sendRedirect("/");
     }
 
     /**
