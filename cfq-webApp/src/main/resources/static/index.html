@@ -85,7 +85,8 @@
     //退出
     function logout() {
         $.get("/logout",function(){});
-        location.href = "/";
+        //客户端session失效后，将认证服务器session也失效掉，添加重定向url
+        location.href = "http://auth.caofanqi.cn:9020/logout?redirect_uri=http://web.caofanqi.cn:9000";
     }
 
 </script>

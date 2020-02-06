@@ -1,5 +1,9 @@
 server:
   port: 9020
+  servlet:
+    session:
+      #session超时时间设置
+      timeout: 2592000
 
 spring:
   application:
@@ -9,3 +13,7 @@ spring:
     url: jdbc:mysql://localhost:3306/study-security?characterEncoding=UTF-8&useSSL=false
     username: root
     password: root
+  #speing-session相关配置
+  session:
+    #指定存储类型，这里使用JDBC
+    store-type: JDBC
