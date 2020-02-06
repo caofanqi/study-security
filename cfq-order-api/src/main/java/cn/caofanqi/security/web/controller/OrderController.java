@@ -34,10 +34,12 @@ public class OrderController {
     }
 
 
-    @GetMapping("/{productId}")
-    public OrderDTO get(@PathVariable Long productId) {
+    @GetMapping("/{id}")
+    public OrderDTO get(@PathVariable Long id,@RequestHeader String username) {
+        log.info("username is :{}", username);
         OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setProductId(productId);
+        orderDTO.setId(id);
+        orderDTO.setProductId(5 * id);
         return orderDTO;
     }
 

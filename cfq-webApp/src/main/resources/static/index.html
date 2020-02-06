@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>cfq security</title>
+</head>
+
+<body>
+<h1>Study Security</h1>
+
+<div id="login-success">
+    <h1>登陆成功！</h1>
+
+    <p>
+        <button onclick="getOrder()">获取订单信息</button>
+    </p>
+
+    <table>
+        <tr>
+            <td>order id</td>
+            <td><input id="orderId"/></td>
+        </tr>
+        <tr>
+            <td>order product id</td>
+            <td><input id="productId"/></td>
+        </tr>
+    </table>
+
+    </hr>
+    <p>
+        <button onclick="logout()">退出</button>
+    </p>
+
+</div>
+
+<div id="goto-login">
+    <table>
+        <tr>
+            <td>用户名</td>
+            <td><input id="username" name="username" value=""/></td>
+        </tr>
+        <tr>
+            <td>密码</td>
+            <td><input id="password" name="password" value=""/></td>
+        </tr>
+        <tr>
+            <td colspan="2" align="right">
+                <button id="submit" onclick="login()">登录</button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script>
+    //判断用户是否登陆
+    $(function () {
+        $.get("/me", function (data) {
+            if (data) {
+                //已登录
+                $("#login-success").show();
+                $("#goto-login").hide();
+            } else {
+                //未登录
+                $("#login-success").hide();
+                $("#goto-login").show();
+            }
+        });
+    });
+
+    //登陆方法
+    function login() {
+        var username = $("#username").val();
+        var password = $("#password").val();
+
+        $.ajax({
+            type: "POST",
+            url: "/login",
+            contentType: "application/json;charset=utf-8",
+            data: JSON.stringify({"username": username, "password": password}),
+            success: function (msg) {
+                location.href = "/";
+            },
+            error: function (msg) {
+                alert("登录失败！！")
+            }
+        });
+    }
+
+    //获取订单信息,通过/api转发到网关，通过/order转发到order微服务
+    function getOrder() {
+        $.get("/api/order/orders/1", function (data) {
+            $("#orderId").val(data.id);
+            $("#productId").val(data.productId);
+        });
+    }
+
+    //退出
+    function logout() {
+        $.get("/logout",function(){});
+        location.href = "/";
+    }
+
+</script>
+</body>
+</html>

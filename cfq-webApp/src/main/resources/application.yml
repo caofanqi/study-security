@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: webApp
+
+server:
+  port: 9000
+
+zuul:
+  routes:
+    api:
+      path: /api/**
+      url: http://gateway.caofanqi.cn:9010
+  sensitive-headers:
