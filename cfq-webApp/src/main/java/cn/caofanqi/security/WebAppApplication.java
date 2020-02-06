@@ -12,8 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,28 +44,16 @@ public class WebAppApplication {
      * 获取当前认证的token信息
      */
     @GetMapping("/me")
-    public TokenInfoDTO me(HttpServletRequest request){
-        return (TokenInfoDTO)request.getSession().getAttribute("token");
+    public TokenInfoDTO me(HttpServletRequest request) {
+        return (TokenInfoDTO) request.getSession().getAttribute("token");
     }
 
-    /**
-     * 向授权服务器获取授权码
-     */
-    @GetMapping("/oauth/code")
-    public void oauthCode(HttpServletResponse response) throws IOException {
-        String oauthCodeUrl = "http://auth.caofanqi.cn:9020/oauth/authorize?" +
-                "client_id=webApp&" +
-                "redirect_uri=http://web.caofanqi.cn:9000/oauth/callback&" +
-                "response_type=code&" +
-                "state=abc";
-
-        response.sendRedirect(oauthCodeUrl);
-    }
 
     /**
      * 回调方法
-     *  接收认证服务器发来的授权码，并换取令牌
-     * @param code 授权码
+     * 接收认证服务器发来的授权码，并换取令牌
+     *
+     * @param code  授权码
      * @param state 请求授权服务器时发送的state
      */
     @GetMapping("/oauth/callback")
@@ -80,7 +66,7 @@ public class WebAppApplication {
         headers.setBasicAuth("webApp", "123456");
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.set("code",code);
+        params.set("code", code);
         params.set("grant_type", "authorization_code");
         params.set("redirect_uri", "http://web.caofanqi.cn:9000/oauth/callback");
 
@@ -89,18 +75,18 @@ public class WebAppApplication {
         ResponseEntity<TokenInfoDTO> authResult = restTemplate.exchange(oauthTokenUrl, HttpMethod.POST, httpEntity, TokenInfoDTO.class);
 
         request.getSession().setAttribute("token", authResult.getBody());
-        log.info("tokenInfo : {}",authResult.getBody());
+        log.info("tokenInfo : {}", authResult.getBody());
 
-        log.info("state :{}",state);
+        log.info("state :{}", state);
         //一般会根据state记录需要登陆时的路由
         response.sendRedirect("/");
     }
 
     /**
-     *  退出
+     * 退出
      */
     @RequestMapping("/logout")
-    public void logout(HttpServletRequest request){
+    public void logout(HttpServletRequest request) {
         request.getSession().invalidate();
     }
 

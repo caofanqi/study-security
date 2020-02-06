@@ -33,10 +33,6 @@
 
 </div>
 
-<div id="goto-login">
-    <a href="/oauth/code">未登录，去登陆</a>
-</div>
-
 <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
 <script>
     //判断用户是否登陆
@@ -49,7 +45,12 @@
             } else {
                 //未登录
                 $("#login-success").hide();
-                $("#goto-login").show();
+                //$("#goto-login").show();
+                location.href = "http://auth.caofanqi.cn:9020/oauth/authorize?" +
+                    "client_id=webApp&" +
+                    "redirect_uri=http://web.caofanqi.cn:9000/oauth/callback&" +
+                    "response_type=code&" +
+                    "state=abc";
             }
         });
     });
