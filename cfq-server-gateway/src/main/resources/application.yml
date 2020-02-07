@@ -22,6 +22,9 @@ zuul:
     token:
       url: http://auth.caofanqi.cn:9020
       path: /token/**
+    user:
+      url: http://user.caofanqi.cn:9090 #目前为了处理 /user/me请求，添什么无所谓
+      path: /user/**
     order:
       url: http://order.caofanqi.cn:9080
       path: /order/**

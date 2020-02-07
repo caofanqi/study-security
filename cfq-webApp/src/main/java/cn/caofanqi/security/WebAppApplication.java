@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -43,10 +44,11 @@ public class WebAppApplication {
     /**
      * 获取当前认证的token信息
      */
-    @GetMapping("/me")
-    public TokenInfoDTO me(HttpServletRequest request) {
-        return (TokenInfoDTO) request.getSession().getAttribute("token");
-    }
+//    @GetMapping("/me")
+//    public TokenInfoDTO me(HttpServletRequest request) {
+//        return (TokenInfoDTO) request.getSession().getAttribute("token");
+//    }
+
 
 
     /**
@@ -74,8 +76,22 @@ public class WebAppApplication {
 
         ResponseEntity<TokenInfoDTO> authResult = restTemplate.exchange(oauthTokenUrl, HttpMethod.POST, httpEntity, TokenInfoDTO.class);
 
-        request.getSession().setAttribute("token", authResult.getBody().init());
         log.info("tokenInfo : {}", authResult.getBody());
+        //将token放到session中
+        //request.getSession().setAttribute("token", authResult.getBody().init());
+
+        //将token放到cookie中
+        Cookie accessTokenCookie = new Cookie("access_token",authResult.getBody().getAccess_token());
+        accessTokenCookie.setMaxAge(authResult.getBody().getExpires_in().intValue() - 5);
+        accessTokenCookie.setDomain("caofanqi.cn");
+        accessTokenCookie.setPath("/");
+        response.addCookie(accessTokenCookie);
+
+        Cookie refreshTokenCookie = new Cookie("refresh_token",authResult.getBody().getRefresh_token());
+        refreshTokenCookie.setMaxAge(2592000);
+        refreshTokenCookie.setDomain("caofanqi.cn");
+        refreshTokenCookie.setPath("/");
+        response.addCookie(refreshTokenCookie);
 
         log.info("state :{}", state);
         //一般会根据state记录需要登陆时的路由

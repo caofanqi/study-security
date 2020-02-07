@@ -34,10 +34,12 @@
 </div>
 
 <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery/3.4.0/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 <script>
     //判断用户是否登陆
     $(function () {
-        $.get("/me", function (data) {
+        $.get("api/user/me", function (data) {
             if (data) {
                 //已登录
                 $("#login-success").show();
@@ -84,27 +86,31 @@
 
     //退出
     function logout() {
-        $.get("/logout",function(){});
+        $.get("/logout", function () {
+        });
+        //将浏览器中的cookie也删除
+        $.removeCookie('access_token', { domain:'caofanqi.cn', path: '/' });
+        $.removeCookie('refresh_token', { domain:'caofanqi.cn', path: '/' });
         //客户端session失效后，将认证服务器session也失效掉，添加重定向url
         location.href = "http://auth.caofanqi.cn:9020/logout?redirect_uri=http://web.caofanqi.cn:9000";
     }
 
 
     //拦截全局错误响应 ，使用方法https://www.runoob.com/jquery/ajax-ajaxerror.html
-    $(document).ajaxError(function(event, jqXHR, options, errorMsg) {
+    $(document).ajaxError(function (event, jqXHR, options, errorMsg) {
         //jqXHR打印如下 alert(JSON.stringify(jqXHR));
         //{"readyState":4,"responseText":"{\"message\":\"refresh fail\"}","responseJSON":{"message":"token refresh fail"},"status":500,"statusText":"error"}
         if (jqXHR.status == 500 && jqXHR.responseJSON.message == 'token refresh fail') {
-            alert("登陆信息以失效");
+            //alert("登陆信息以失效");
             //方案1、退出，重新登陆，走认证流程
-            logout();
+            //logout();
 
             //方案2、去认证服务器认证
-        //     location.href = "http://auth.caofanqi.cn:9020/oauth/authorize?" +
-        //         "client_id=webApp&" +
-        //         "redirect_uri=http://web.caofanqi.cn:9000/oauth/callback&" +
-        //         "response_type=code&" +
-        //         "state=abc";
+            location.href = "http://auth.caofanqi.cn:9020/oauth/authorize?" +
+                "client_id=webApp&" +
+                "redirect_uri=http://web.caofanqi.cn:9000/oauth/callback&" +
+                "response_type=code&" +
+                "state=abc";
         }
     });
 
