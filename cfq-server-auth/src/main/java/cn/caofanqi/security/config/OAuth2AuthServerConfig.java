@@ -2,6 +2,7 @@ package cn.caofanqi.security.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -32,6 +33,9 @@ public class OAuth2AuthServerConfig extends AuthorizationServerConfigurerAdapter
     @Resource
     private DataSource dataSource;
 
+    @Resource
+    private UserDetailsService userDetailsService;
+
     /**
      * 配置授权服务器的安全性
      * checkTokenAccess:验证令牌需要什么条件，isAuthenticated()：需要经过身份认证。
@@ -56,10 +60,12 @@ public class OAuth2AuthServerConfig extends AuthorizationServerConfigurerAdapter
      * 配置授权服务器终端的非安全特征
      * authenticationManager 校验用户信息是否合法
      * tokenStore：token存储
+     * userDetailsService:配合刷新令牌使用
      */
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints.authenticationManager(authenticationManager).tokenStore(new JdbcTokenStore(dataSource));
+        endpoints.authenticationManager(authenticationManager).tokenStore(new JdbcTokenStore(dataSource))
+        .userDetailsService(userDetailsService);
     }
 
 }

@@ -74,7 +74,7 @@ public class WebAppApplication {
 
         ResponseEntity<TokenInfoDTO> authResult = restTemplate.exchange(oauthTokenUrl, HttpMethod.POST, httpEntity, TokenInfoDTO.class);
 
-        request.getSession().setAttribute("token", authResult.getBody());
+        request.getSession().setAttribute("token", authResult.getBody().init());
         log.info("tokenInfo : {}", authResult.getBody());
 
         log.info("state :{}", state);

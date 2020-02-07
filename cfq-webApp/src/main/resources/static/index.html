@@ -89,6 +89,25 @@
         location.href = "http://auth.caofanqi.cn:9020/logout?redirect_uri=http://web.caofanqi.cn:9000";
     }
 
+
+    //拦截全局错误响应 ，使用方法https://www.runoob.com/jquery/ajax-ajaxerror.html
+    $(document).ajaxError(function(event, jqXHR, options, errorMsg) {
+        //jqXHR打印如下 alert(JSON.stringify(jqXHR));
+        //{"readyState":4,"responseText":"{\"message\":\"refresh fail\"}","responseJSON":{"message":"token refresh fail"},"status":500,"statusText":"error"}
+        if (jqXHR.status == 500 && jqXHR.responseJSON.message == 'token refresh fail') {
+            alert("登陆信息以失效");
+            //方案1、退出，重新登陆，走认证流程
+            logout();
+
+            //方案2、去认证服务器认证
+        //     location.href = "http://auth.caofanqi.cn:9020/oauth/authorize?" +
+        //         "client_id=webApp&" +
+        //         "redirect_uri=http://web.caofanqi.cn:9000/oauth/callback&" +
+        //         "response_type=code&" +
+        //         "state=abc";
+        }
+    });
+
 </script>
 </body>
 </html>

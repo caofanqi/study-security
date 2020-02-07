@@ -31,7 +31,7 @@ zuul:
   ratelimit:
     key-prefix: zuul-ratelimit  #key的前缀，默认为应用名
     enabled: true #是否启用限流
-    repository: REDIS #使用的存储
+    repository: REDIS #使用的存储,推荐使用REDIS
     behind-proxy: false #是否是代理之后，默认false
     default-policy-list: #默认策略列表：可选，针对所有的路由配置的策略，除非有具体的policy，否者使用默认该默认策略
       - limit: 2 # 可选，每个 refresh-interval 窗口的请求数限制
