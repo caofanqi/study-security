@@ -1,2 +1,11 @@
 server:
   port: 9070
+
+security:
+  oauth2:
+    client:
+      client-id: priceService
+      client-secret: 123456
+    resource:
+      jwt:
+        key-uri: http://auth.caofanqi.cn:9020/oauth/token_key
