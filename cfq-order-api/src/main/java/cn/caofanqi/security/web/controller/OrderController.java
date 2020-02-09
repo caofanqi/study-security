@@ -33,8 +33,8 @@ public class OrderController {
     @PreAuthorize("#oauth2.hasScope('write') and hasRole('ROLE_ADMIN')")
     public OrderDTO create(@RequestBody OrderDTO orderDTO, @AuthenticationPrincipal String username) {
         log.info("username is :{}", username);
-//        PriceDTO price = oAuth2RestTemplate.getForObject("http://127.0.0.1:9070/prices/" + orderDTO.getProductId(), PriceDTO.class);
-//        log.info("price is : {}", price.getPrice());
+        PriceDTO price = oAuth2RestTemplate.getForObject("http://127.0.0.1:9070/prices/" + orderDTO.getProductId(), PriceDTO.class);
+        log.info("price is : {}", price.getPrice());
         return orderDTO;
     }
 
