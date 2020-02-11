@@ -9,3 +9,15 @@ security:
     resource:
       jwt:
         key-uri: http://auth.caofanqi.cn:9020/oauth/token_key
+
+spring:
+  application:
+    name: order-server
+  cloud:
+    sentinel:
+      transport:
+        #会在应用对应的机器上启动一个Http Server，该Server会与Sentinel控制台做交互。
+        #比如Sentinel控制台添加了一个限流规则，会把规则数据push给这个Http Server接收，Http Server再将规则注册到Sentinel中。
+        port: 8719
+        #Sentinel控制台地址
+        dashboard: localhost:8080
