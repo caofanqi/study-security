@@ -54,6 +54,7 @@ public class OrderController {
 
 
     @GetMapping("/{id}")
+    @SentinelResource(value = "getOrder")
     public OrderDTO get(@PathVariable Long id, @AuthenticationPrincipal String username) {
         log.info("username is :{}", username);
         OrderDTO orderDTO = new OrderDTO();
