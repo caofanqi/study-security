@@ -1,45 +1,44 @@
 package cn.caofanqi.security.config;
 
-import com.alibaba.csp.sentinel.slots.block.RuleConstant;
-import com.alibaba.csp.sentinel.slots.block.degrade.DegradeRule;
-import com.alibaba.csp.sentinel.slots.block.degrade.DegradeRuleManager;
+import com.alibaba.csp.sentinel.datasource.ReadableDataSource;
+import com.alibaba.csp.sentinel.datasource.zookeeper.ZookeeperDataSource;
 import com.alibaba.csp.sentinel.slots.block.flow.FlowRule;
 import com.alibaba.csp.sentinel.slots.block.flow.FlowRuleManager;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
- * Sentinel 规则创建，实现ApplicationListener监听ContextRefreshedEvent，系统启动完成后就会执行
+ * 从远程配置中心获取规则，进行配置
  *
  * @author caofanqi
  * @date 2020/2/11 15:50
  */
 @Component
-public class SentinelConfig  implements ApplicationListener<ContextRefreshedEvent> {
+public class SentinelConfig{
 
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
-        //流控规则
-        List<FlowRule> rules = new ArrayList<>();
-        FlowRule rule = new FlowRule();
-        rule.setResource("createOrder");
-        rule.setGrade(RuleConstant.FLOW_GRADE_QPS);
-        rule.setCount(10);
-        rules.add(rule);
-        FlowRuleManager.loadRules(rules);
+    @Value("${sentinel.zookeeper.address}")
+    private String remoteAddress;
 
-        //熔断降级规则
-        List<DegradeRule> degradeRules = new ArrayList<>();
-        DegradeRule degradeRule = new DegradeRule();
-        degradeRule.setResource("createOrder");
-        degradeRule.setGrade(RuleConstant.DEGRADE_GRADE_RT);
-        degradeRule.setCount(10);
-        degradeRule.setTimeWindow(10);
-        degradeRules.add(degradeRule);
-        DegradeRuleManager.loadRules(degradeRules);
+    @Value("${sentinel.zookeeper.path}")
+    private String path;
+
+    @Value("${spring.application.name}")
+    private String appName;
+
+
+    @PostConstruct
+    public void loadRules(){
+        //流控规则数据源
+        ReadableDataSource<String, List<FlowRule>> flowRuleDataSource = new ZookeeperDataSource<>(remoteAddress, path + "/" + appName,
+                source -> JSON.parseObject(source, new TypeReference<List<FlowRule>>() {}));
+        FlowRuleManager.register2Property(flowRuleDataSource.getProperty());
+
+        //....
     }
+
 }
