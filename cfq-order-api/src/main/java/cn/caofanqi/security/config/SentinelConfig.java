@@ -1,6 +1,8 @@
 package cn.caofanqi.security.config;
 
 import com.alibaba.csp.sentinel.slots.block.RuleConstant;
+import com.alibaba.csp.sentinel.slots.block.degrade.DegradeRule;
+import com.alibaba.csp.sentinel.slots.block.degrade.DegradeRuleManager;
 import com.alibaba.csp.sentinel.slots.block.flow.FlowRule;
 import com.alibaba.csp.sentinel.slots.block.flow.FlowRuleManager;
 import org.springframework.context.ApplicationListener;
@@ -21,15 +23,23 @@ public class SentinelConfig  implements ApplicationListener<ContextRefreshedEven
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
+        //流控规则
         List<FlowRule> rules = new ArrayList<>();
         FlowRule rule = new FlowRule();
-        //设置资源名
         rule.setResource("createOrder");
-        //根据QPS进行限流
         rule.setGrade(RuleConstant.FLOW_GRADE_QPS);
-        // 设置每秒只能有一个请求通过.
-        rule.setCount(1);
+        rule.setCount(10);
         rules.add(rule);
         FlowRuleManager.loadRules(rules);
+
+        //熔断降级规则
+        List<DegradeRule> degradeRules = new ArrayList<>();
+        DegradeRule degradeRule = new DegradeRule();
+        degradeRule.setResource("createOrder");
+        degradeRule.setGrade(RuleConstant.DEGRADE_GRADE_RT);
+        degradeRule.setCount(10);
+        degradeRule.setTimeWindow(10);
+        degradeRules.add(degradeRule);
+        DegradeRuleManager.loadRules(degradeRules);
     }
 }
