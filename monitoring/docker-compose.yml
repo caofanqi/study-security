@@ -7,3 +7,15 @@ services:
     - ./prometheus/:/etc/prometheus/
     ports:
     - '8999:9090'
+  grafana:
+    image: grafana/grafana:5.2.4
+    container_name: 'grafana'
+    ports:
+    - '3000:3000'
+    volumes:
+    - ./grafana/config/grafana.ini:/etc/grafana/grafana.ini
+    - ./grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+    - ./grafana/config.monitoring
+    depends_on:
+    - prometheus

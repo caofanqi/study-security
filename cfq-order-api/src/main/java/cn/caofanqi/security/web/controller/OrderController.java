@@ -39,9 +39,9 @@ public class OrderController {
         log.info("username is :{}", username);
 //        PriceDTO price = oAuth2RestTemplate.getForObject("http://127.0.0.1:9070/prices/" + orderDTO.getProductId(), PriceDTO.class);
 //        log.info("price is : {}", price.getPrice());
-        Thread.sleep(50);
-        return orderDTO;
 
+        throw new RuntimeException("test error");
+//        return orderDTO;
     }
 
     public OrderDTO createOrderOnBlock(OrderDTO orderDTO, String username, BlockException e) {
