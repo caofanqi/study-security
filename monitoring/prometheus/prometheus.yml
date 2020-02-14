@@ -1,0 +1,29 @@
+#全局配置
+global:
+  #间隔多久去拉取一次数据
+  scrape_interval:   15s
+
+# 要拉取的目标是哪里
+scrape_configs:
+# 我们的springboot项目
+- job_name:       'springboot-app'
+  #间隔10s拉取一次数据，覆盖全局配置
+  scrape_interval: 10s
+  #请求的路径
+  metrics_path: '/actuator/prometheus'
+
+  static_configs:
+  #去哪里抓取，因为我们的项目跑在本地电脑，所以配置运行docker的宿主机
+  - targets: ['host.docker.internal:9080']
+    #把抓取来的数据，添加一个标签
+    labels:
+      application: 'springboot-app'
+
+#prometheus本机的监控
+- job_name: 'prometheus'
+
+  scrape_interval: 5s
+
+  static_configs:
+  - targets: ['localhost:9090']
+

@@ -1,0 +1,9 @@
+version: "3"
+services:
+  prometheus:
+    image: prom/prometheus:v2.4.3
+    container_name: 'prometheus'
+    volumes:
+    - ./prometheus/:/etc/prometheus/
+    ports:
+    - '8999:9090'

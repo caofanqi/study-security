@@ -26,3 +26,14 @@ sentinel:
   zookeeper:
     address: 127.0.0.1:2181
     path: /sentinel_rule_config
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # 对外暴露的端点
+        include:
+          - prometheus
+          - info
+          - health
