@@ -5,6 +5,7 @@ import cn.caofanqi.security.pojo.dto.PriceDTO;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
@@ -40,8 +41,9 @@ public class OrderController {
 //        PriceDTO price = oAuth2RestTemplate.getForObject("http://127.0.0.1:9070/prices/" + orderDTO.getProductId(), PriceDTO.class);
 //        log.info("price is : {}", price.getPrice());
 
-        throw new RuntimeException("test error");
-//        return orderDTO;
+        Thread.sleep(RandomUtils.nextInt(100,1000));
+
+        return orderDTO;
     }
 
     public OrderDTO createOrderOnBlock(OrderDTO orderDTO, String username, BlockException e) {
