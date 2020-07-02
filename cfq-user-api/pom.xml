@@ -28,7 +28,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <!--   覆盖默认的8驱动     -->
-        <mysql.version>5.1.41</mysql.version>
+        <mysql.version>8.0.16</mysql.version>
         <guava.version>28.0-jre</guava.version>
         <jbcrypt.version>0.4</jbcrypt.version>
         <scrypt.versioin>1.4.0</scrypt.versioin>
