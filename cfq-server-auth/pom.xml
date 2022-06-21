@@ -34,7 +34,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <!--   覆盖默认的8驱动     -->
-        <mysql.version>5.1.41</mysql.version>
+        <mysql.version>8.0.28</mysql.version>
     </properties>
 
 
